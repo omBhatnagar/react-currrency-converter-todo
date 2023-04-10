@@ -7,6 +7,7 @@ import Button from "../components/button";
 import TextInput from "../components/textinput";
 
 import { signupSchema } from "../utils/validateinput";
+import { register } from "../api/auth";
 
 const Signup = () => {
 	const [userData, setUserData] = useState({
@@ -69,6 +70,9 @@ const Signup = () => {
 
 		// Check if validation returned error and display as toast
 		if (!status) return ToastsStore.error(message);
+
+		const { data } = await register(userData);
+		if (data.status === "error") return ToastsStore.error(data.message);
 
 		// Successfull login toast message
 		ToastsStore.success("Successfully logged in!");

@@ -6,6 +6,7 @@ import Button from "../components/button";
 import TextInput from "../components/textinput";
 
 import { loginSchema } from "../utils/validateinput";
+import { login } from "../api/auth";
 
 const Login = () => {
 	const [userData, setUserData] = useState({
@@ -47,21 +48,8 @@ const Login = () => {
 		// Check if validation returned errors
 		if (!status) return ToastsStore.error(message);
 
-		// Fetch json file which has stored user data that is static
-		const res = await fetch("./userdata.json", {
-			headers: {
-				"Content-Type": "application/json",
-				Accept: "application/json",
-			},
-		});
-		const users = await res.json();
-
-		// Check if user exists and then validate them
-		const user = users.find((user) => user.email === userData.email);
-		console.log({ user });
-		if (!user) return ToastsStore.error("Email or password incorrect!");
-		if (user.password !== userData.password)
-			return ToastsStore.error("Email or password incorrect!");
+		const { data } = await login(userData);
+		if (data.status === "error") return ToastsStore.error(data.message);
 
 		// Successfull login toast message
 		ToastsStore.success("Successfully logged in!");
